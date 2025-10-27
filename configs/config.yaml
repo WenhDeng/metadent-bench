@@ -1,0 +1,20 @@
+data:
+  image_dir: data/images
+
+lfss:
+  image_dir: <lfss image dir>
+  meta_cn_dir: <lfss meta_cn dir>
+  meta_en_dir: <lfss meta_en dir>
+
+local_models:
+  baichuan-inc/Baichuan-Omni-1d5:
+    model_dir: <model dir>
+
+api_models:
+  openai/gpt-oss-120b:
+    model_dir: <model dir>
+    served_model_name: <served model name>
+  
+  AIDC-AI/Ovis2-34B:
+    model_dir: <model dir>
+    served_model_name: <served model name>
