@@ -19,17 +19,14 @@
 **MetaDent Bench** is an open-source suite designed to evaluate Vision-Language Models (VLMs) in the context of intraoral photography.
 It consists of three key components:
 
-- **MetaDent Data** – A richly annotated dataset of **60,669** intraoral images, with a **semi-structured meta-labeling framework** that captures both high-level summaries and point-wise clinical descriptions. **Details of the dataset can be found in our [website](https://menxli.github.io/metadent/).**
-- **Annotation & Generation Tools** – Open-source utilities for dataset curation, label management, and automatic benchmark data generation (VQA, Classification, Captioning).
-- **Evaluation Framework** – A unified testing pipeline for VLM prediction and performance evaluation, covering VQA accuracy, multi-label classification metrics, and LLM-based caption evaluation.
----
+- **MetaDent-Data** – A large-scale collection of intraoral images, accompanied by an initial set of richly annotated samples built under a **semi-structured meta-labeling framework** that captures both overall summaries and point-wise clinical descriptions. **Details of the dataset can be found on our [website](https://menxli.github.io/metadent/).**
+- **MetaDent-App** – Open-source utilities for dataset curation and label management.
+- **MetaDent-Bench** – A unified testing and data-generation pipeline for VLM prediction and performance evaluation, supporting automatic benchmark construction (VQA, Classification, Captioning) and comprehensive metric analysis.
 
 ## News
 
 - **[2025-10-27]** Released our benchmark data generation pipeline and evaluation framework, along with the first 100 benchmark datasets for VQA, classification, and image captioning. 🔥🔥🔥
 - **[2025-10-23]** Launched the [MetaDent Website](https://menxli.github.io/metadent/), featuring a demo of the annotation software and some image datasets. 🔥🔥🔥
-
----
 
 ## Installation
 1. Create a conda environment and activate it:
