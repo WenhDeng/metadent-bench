@@ -62,7 +62,8 @@ def load_completed_indices(args: Namespace) -> set:
             for line in f:
                 try:
                     data = json.loads(line.strip())
-                    completed.update(data.keys())
+                    if args.start <= int(list(data.keys())[0]) <= args.end:
+                        completed.update(data.keys())
                 except Exception:
                     continue
     return completed
