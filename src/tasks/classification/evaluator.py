@@ -148,7 +148,7 @@ def run_classification_evaluation(args):
     distribution_json = load_distribution_data()
     label_json = load_classification_data()
     # 18-class
-    labels = set(["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13", "C14", "C15", "C16", "C17", "C18"])
+    cls_labels = set(["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13", "C14", "C15", "C16", "C17", "C18"])
     
     # df_not_exact_match = pd.DataFrame(columns=["ID", "Label", "Prediction"])
     # df_exact_match = pd.DataFrame(columns=["ID", "Label", "Prediction"])
@@ -196,7 +196,7 @@ def run_classification_evaluation(args):
             except Exception as e:
                 # There are other error formats, directly through string matching.
                 s = str(model_json[key])
-                for l in labels:
+                for l in cls_labels:
                     if l in s:
                         ids.add(l)
                 break
