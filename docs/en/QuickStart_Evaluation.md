@@ -104,5 +104,5 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 vllm serve /workspace/share/openai/gpt-oss-120b
 - Make sure the vLLM server is running and accessible at the specified api_base_url.
 - **Make sure your model environment (local or API) is properly configured before running the scripts.**
 - You can adjust `--start`, `--end`, and `--lfss_meta_type` parameters based on your dataset configuration.
-- Generated benchmark files will be stored automatically under the `data/prediction` directory.
+- Generated files will be stored automatically under the `data/evaluation/` and `metric/` directories.
 - For configuration setup, see config.yaml and environment variable notes in the main README.

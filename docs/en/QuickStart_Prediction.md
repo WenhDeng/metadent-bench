@@ -82,5 +82,5 @@ The image captioning prediction process is similar to the VQA prediction process
 - Make sure the vLLM server is running and accessible at the specified api_base_url.
 - **Make sure your model environment (local or API) is properly configured before running the scripts.**
 - You can adjust `--start`, `--end`, and `--lfss_meta_type` parameters based on your dataset configuration.
-- Generated benchmark files will be stored automatically under the `data/prediction` directory.
+- Generated files will be stored automatically under the `data/prediction/` directory.
 - For configuration setup, see config.yaml and environment variable notes in the main README.
