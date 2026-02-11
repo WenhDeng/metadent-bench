@@ -25,6 +25,7 @@ It consists of three key components:
 
 ## News
 
+- **[2026-01-29]** Our paper was accepted by JDR. 🎉🎉🎉
 - **[2025-10-27]** Released our benchmark data generation pipeline and evaluation framework, along with the first 100 benchmark datasets for VQA, classification, and image captioning. 🔥🔥🔥
 - **[2025-10-23]** Launched the [MetaDent Website](https://menxli.github.io/metadent/), featuring a demo of the annotation software and some image datasets. 🔥🔥🔥
 
@@ -58,14 +59,14 @@ It consists of three key components:
       openai/gpt-oss-120b:
         model_dir: <model dir>
         served_model_name: <served model name>
-      
+
       AIDC-AI/Ovis2-34B:
         model_dir: <model dir>
         served_model_name: <served model name>
     ```
     > **NOTE 1 :**
     > `<lfss image dir>`, `<lfss meta_cn dir>` and `<lfss meta_en dir>` are the paths stored in **LFSS**. LFSS configuration can be found in the [MetaDent App](https://menxli.github.io/metadent-app/docs/).
-    
+
     > **NOTE 2 :**
     > Currently, **local_models** only supports `baichuan-inc/Baichuan-Omni-1d5`.
     > Other local models can be deployed online via **vLLM**, and the corresponding deployment details should be entered under **api_models**. Models accessed through OpenAI, Gemini, or similar APIs do **not** need to be listed here.
@@ -136,7 +137,7 @@ It consists of three key components:
       --subtask <subtask> \
       --model_name <model_name>
     ```
-    
+
     If you want to evaluate the captioning task, you need to specify the evaluator model name.
     ```bash
     python -m src.main \
