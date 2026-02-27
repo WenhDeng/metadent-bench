@@ -182,9 +182,14 @@ The dataset components follow their respective original licenses:
 
 ## Citation
 
-If you find our code useful in your research or projects, please consider giving the repository a star.
-
-<!-- If you find our paper and code useful in your research or projects, please consider giving the repository a star and citing our paper using this BibTeX:
-```bib
-
-``` -->
+If you find our paper and code useful in your research or projects, please consider giving the repository a star and citing our paper using this BibTeX:
+```bibtex
+@article{metadent_jdr_2026,
+  title={MetaDent: Labeling Clinical Images for Vision-Language Models in Dentistry},
+  author={Meng-Xun Li and Wen-Hui Deng and Zhi-Xing Wu and Chun-Xiao Jin and Jia-Min Wu and Yue Han and James Kit Hon Tsoi and Gui-Song Xia and Cui Huang},
+  journal={Journal of Dental Research},
+  publisher={SAGE Publications},
+  doi={10.1177/00220345261424242},
+  year={2026}
+}
+```
