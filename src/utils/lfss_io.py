@@ -1,7 +1,7 @@
 import base64
 from dataclasses import dataclass
 from io import BytesIO
-from typing import Optional
+from typing import Dict, List, Optional
 
 from lfss.api import Connector
 from PIL import Image
@@ -12,14 +12,14 @@ class Label:
     @dataclass
     class LabelItem:
         id: str
-        low_confidence: float
+        low_confidence: bool
         description: str
-        contours: list[list[float]]
-    annotators: list[str]
+        contours: List[List[List[float]]]
+    annotators: List[str]
     overall_description: str
-    it: list[LabelItem]
+    it: List[LabelItem]
 
-    def compact_json(self) -> dict:
+    def compact_json(self) -> Dict:
         return {
             "overall_description": self.overall_description,
             "items": [
@@ -36,7 +36,7 @@ class Skip:
     reason: str
     skipTime: str
 
-    def compact_json(self) -> dict:
+    def compact_json(self) -> Dict:
         return {
             "reason": self.reason,
             "skipTime": self.skipTime
@@ -48,7 +48,7 @@ class Info:
     path: str
     source: str
 
-    def compact_json(self) -> dict:
+    def compact_json(self) -> Dict:
         return {
             "file_name": self.file_name,
             "path": self.path,
@@ -61,7 +61,7 @@ class ImageReader:
         self.c = Connector()
         self.image_dir = image_dir
 
-    def get_raw_image(self, image_id: str) -> Optional[dict]:
+    def get_raw_image(self, image_id: str) -> Optional[Dict]:
         fpath = f"{self.image_dir}/{image_id}.png"
         try:
             image_bytes = self.c.get(fpath)
@@ -89,7 +89,7 @@ class InfoReader:
         self.c = Connector()
         self.lbl_meta_dir = lbl_meta_dir
 
-    def get_raw_content(self, label_id: str) -> Optional[dict]:
+    def get_raw_content(self, label_id: str) -> Optional[Dict]:
         lbl_fpath = f"{self.lbl_meta_dir}/{label_id}/info.json"
         try:
             content = self.c.get_json(lbl_fpath)
@@ -117,7 +117,7 @@ class LabelReader:
         self.c = Connector()
         self.lbl_meta_dir = lbl_meta_dir
         
-    def get_raw_content(self, label_id: str) -> Optional[dict]:
+    def get_raw_content(self, label_id: str) -> Optional[Dict]:
         lbl_fpath = f"{self.lbl_meta_dir}/{label_id}/label.json"
         try:
             content = self.c.get_json(lbl_fpath)
@@ -151,7 +151,7 @@ class SkipReader:
         self.c = Connector()
         self.lbl_meta_dir = lbl_meta_dir
         
-    def get_raw_content(self, label_id: str) -> Optional[dict]:
+    def get_raw_content(self, label_id: str) -> Optional[Dict]:
         lbl_fpath = f"{self.lbl_meta_dir}/{label_id}/skip.json"
         try:
             content = self.c.get_json(lbl_fpath)
