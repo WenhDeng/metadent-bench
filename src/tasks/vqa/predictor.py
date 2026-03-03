@@ -23,6 +23,12 @@ def task(idx: str, items: list, image_dir: str, model: BaseModel) -> dict:
         choice = item["choice"]
         
         image_path= os.path.join(image_dir, f"{idx}.png")
+        if not os.path.exists(image_path):
+            image_path= os.path.join(image_dir, f"{idx}.jpg")
+        if not os.path.exists(image_path):
+            return {
+                "res": {idx: {"failed": f"Image file not found: {image_path}"}}
+            }
         p = prompt.vqa_answer_intraoral_condition.substitute(
             question=question,
             choice=model.j2t(choice),

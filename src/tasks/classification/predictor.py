@@ -16,6 +16,12 @@ from src.utils.file_io import (
 
 def task(idx: str, image_dir: str, model: BaseModel) -> dict:
     image_path= os.path.join(image_dir, f"{idx}.png")
+    if not os.path.exists(image_path):
+        image_path= os.path.join(image_dir, f"{idx}.jpg")
+    if not os.path.exists(image_path):
+        return {
+            "res": {idx: {"failed": f"Image file not found: {image_path}"}}
+        }
     p = prompt.classify_intraoral_condition_for_image.substitute(label_desc=model.j2t(prompt.label_desc_en))
 
     try:

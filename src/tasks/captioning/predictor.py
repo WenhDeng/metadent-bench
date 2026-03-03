@@ -16,6 +16,12 @@ from src.utils.file_io import (
 
 def task(idx: str, image_dir: str, model: BaseModel) -> dict:
     image_path= os.path.join(image_dir, f"{idx}.png")
+    if not os.path.exists(image_path):
+        image_path= os.path.join(image_dir, f"{idx}.jpg")
+    if not os.path.exists(image_path):
+        return {
+            "res": {idx: {"failed": f"Image file not found: {image_path}"}}
+        }
     p = prompt.captioning_intraoral_condition.substitute()
 
     try:
