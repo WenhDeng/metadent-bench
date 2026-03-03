@@ -1,4 +1,6 @@
 import base64
+import os
+import time
 from dataclasses import dataclass
 from io import BytesIO
 from typing import Dict, List, Optional
@@ -57,54 +59,113 @@ class Info:
 
 
 class ImageReader:
-    def __init__(self, image_dir):
+    def __init__(self, image_dir: str):
         self.c = Connector()
         self.image_dir = image_dir
 
-    def get_raw_image(self, image_id: str) -> Optional[Dict]:
-        fpath = f"{self.image_dir}/{image_id}.png"
-        try:
-            image_bytes = self.c.get(fpath)
-            if image_bytes is None:
-                return None
-            return image_bytes
-        except Exception as e:
-            print(e)
-            return None
+    def read_as_bytes(
+        self, filename: str,
+        valid_extensions: set = {'.png', '.jpg', '.jpeg'},
+        max_retries: int = 3,
+        delay: float = 1.0,
+    ) -> bytes:
+        assert isinstance(filename, str), \
+            f"filename must be a string, got {type(filename).__name__}: {repr(filename)[:50]}"
+        assert any(filename.lower().endswith(ext) for ext in valid_extensions), \
+            f"File {filename} must be an image file ({', '.join(valid_extensions)})"
+        fpath = os.path.join(self.image_dir, filename)
+        retry_count = 0
 
-    def get_encode_image(self, image_id: str) -> Optional[Info]:
-        image_bytes = self.get_raw_image(image_id)
-        if image_bytes is None:
-            return None
+        while retry_count <= max_retries:
+            try:
+                image_bytes = self.c.get(fpath)
+                return image_bytes
+            except Exception as e:
+                retry_count += 1
+                if retry_count > max_retries:
+                    raise ValueError(f"Max retries exceeded for {fpath}: {e}")
+                time.sleep(delay)
+                print(f"retrying...")
+
+    def read_as_base64(
+        self, filename: str,
+        valid_extensions: set = {'.png', '.jpg', '.jpeg'},
+        max_retries: int = 3,
+        delay: float = 1.0,
+    ) -> str:
+        image_bytes = self.read_as_bytes(
+            filename=filename,
+            valid_extensions=valid_extensions,
+            max_retries=max_retries,
+            delay=delay,
+        )
         return base64.b64encode(image_bytes).decode("utf-8")
-    
-    def get_image(self, image_id: str) -> Optional[Info]:
-        image_bytes = self.get_raw_image(image_id)
-        if image_bytes is None:
-            return None
+
+    def read_as_pil_image(
+        self, filename: str,
+        valid_extensions: set = {'.png', '.jpg', '.jpeg'},
+        max_retries: int = 3,
+        delay: float = 1.0,
+    ) -> Image.Image:
+        image_bytes = self.read_as_bytes(
+            filename=filename,
+            valid_extensions=valid_extensions,
+            max_retries=max_retries,
+            delay=delay,
+        )
         return Image.open(BytesIO(image_bytes))
+
 
 class InfoReader:
     def __init__(self, lbl_meta_dir):
         self.c = Connector()
         self.lbl_meta_dir = lbl_meta_dir
 
-    def get_raw_content(self, label_id: str) -> Optional[Dict]:
-        lbl_fpath = f"{self.lbl_meta_dir}/{label_id}/info.json"
-        try:
-            content = self.c.get_json(lbl_fpath)
-            if content is None:
-                return None
-            return content
-        except Exception as e:
-            print(e)
-            return None
+    def get_raw_data(
+        self, label_id: str | int,
+        max_retries: int = 3,
+        delay: float = 1.0,
+    ) -> Dict:
+        """
+        Get raw data for a given label id
 
-    def get(self, label_id: str) -> Optional[Info]:
-        content = self.get_raw_content(label_id)
-        if content is None:
-            return None
-        
+        :param label_id: The unique identifier of the label
+        :type label_id: str | int
+        :param max_retries: The maximum number of retries if the request fails
+        :type max_retries: int
+        :param delay: The delay between retries in seconds
+        :type delay: float
+        :return: Raw info data for the label
+        """
+        label_id = str(label_id).zfill(9)
+        lbl_fpath = os.path.join(self.lbl_meta_dir, label_id, "info.json")
+        retry_count = 0
+
+        while retry_count <= max_retries:
+            try:
+                content = self.c.get_json(lbl_fpath)
+                if content is None:
+                    raise FileNotFoundError(f"{lbl_fpath} not found")
+
+                assert isinstance(content, Dict)
+                return content
+            except Exception as e:
+                retry_count += 1
+                if retry_count > max_retries:
+                    raise ValueError(f"Max retries exceeded for {lbl_fpath}: {e}")
+                time.sleep(delay)
+
+    def get(
+        self, label_id: str | int,
+        max_retries: int = 3,
+        delay: float = 1.0,
+    ) -> Optional[Info]:
+        content = self.get_raw_data(
+            label_id=label_id,
+            max_retries=max_retries,
+            delay=delay,
+        )
+
         lbl = Info(
             file_name=content["file_name"],
             path=content["path"],
@@ -116,22 +177,34 @@ class LabelReader:
     def __init__(self, lbl_meta_dir):
         self.c = Connector()
         self.lbl_meta_dir = lbl_meta_dir
-        
-    def get_raw_content(self, label_id: str) -> Optional[Dict]:
-        lbl_fpath = f"{self.lbl_meta_dir}/{label_id}/label.json"
-        try:
-            content = self.c.get_json(lbl_fpath)
-            if content is None:
-                return None
-            return content
-        except Exception as e:
-            return None
+
+    def get_raw_content(
+        self, label_id: str | int,
+        max_retries: int = 3,
+        delay: float = 1.0,
+    ) -> Dict | None:
+        label_id = str(label_id).zfill(9)
+        lbl_fpath = os.path.join(self.lbl_meta_dir, label_id, "label.json")
+        retry_count = 0
+
+        while retry_count <= max_retries:
+            try:
+                content = self.c.get_json(lbl_fpath)
+                return content
+            except Exception as e:
+                if "Not Found" in str(e):
+                    return None
+
+                retry_count += 1
+                if retry_count > max_retries:
+                    raise ValueError(f"Max retries exceeded for {lbl_fpath}: {e}")
+                time.sleep(delay)
 
     def get(self, label_id: str) -> Optional[Label]:
         content = self.get_raw_content(label_id)
         if content is None:
             return None
-        
+
         lbl = Label(
             annotators=content["annotators"],
             overall_description=content["overallDescription"],
@@ -150,22 +223,34 @@ class SkipReader:
     def __init__(self, lbl_meta_dir):
         self.c = Connector()
         self.lbl_meta_dir = lbl_meta_dir
-        
-    def get_raw_content(self, label_id: str) -> Optional[Dict]:
-        lbl_fpath = f"{self.lbl_meta_dir}/{label_id}/skip.json"
-        try:
-            content = self.c.get_json(lbl_fpath)
-            if content is None:
-                return None
-            return content
-        except Exception as e:
-            return None
+
+    def get_raw_content(
+        self, label_id: str | int,
+        max_retries: int = 3,
+        delay: float = 1.0,
+    ) -> Dict | None:
+        label_id = str(label_id).zfill(9)
+        lbl_fpath = os.path.join(self.lbl_meta_dir, label_id, "skip.json")
+        retry_count = 0
+
+        while retry_count <= max_retries:
+            try:
+                content = self.c.get_json(lbl_fpath)
+                return content
+            except Exception as e:
+                if "Not Found" in str(e):
+                    return None
+
+                retry_count += 1
+                if retry_count > max_retries:
+                    raise ValueError(f"Max retries exceeded for {lbl_fpath}: {e}")
+                time.sleep(delay)
 
     def get(self, label_id: str) -> Optional[Skip]:
         content = self.get_raw_content(label_id)
         if content is None:
             return None
-        
+
         lbl = Skip(
             reason=content["reason"],
             skipTime=content["skipTime"]
