@@ -178,7 +178,7 @@ class LabelReader:
         self.c = Connector()
         self.lbl_meta_dir = lbl_meta_dir
 
-    def get_raw_content(
+    def get_raw_data(
         self, label_id: str | int,
         max_retries: int = 3,
         delay: float = 1.0,
@@ -201,7 +201,7 @@ class LabelReader:
                 time.sleep(delay)
 
     def get(self, label_id: str) -> Optional[Label]:
-        content = self.get_raw_content(label_id)
+        content = self.get_raw_data(label_id)
         if content is None:
             return None
 
@@ -224,7 +224,7 @@ class SkipReader:
         self.c = Connector()
         self.lbl_meta_dir = lbl_meta_dir
 
-    def get_raw_content(
+    def get_raw_data(
         self, label_id: str | int,
         max_retries: int = 3,
         delay: float = 1.0,
@@ -247,7 +247,7 @@ class SkipReader:
                 time.sleep(delay)
 
     def get(self, label_id: str) -> Optional[Skip]:
-        content = self.get_raw_content(label_id)
+        content = self.get_raw_data(label_id)
         if content is None:
             return None
 
