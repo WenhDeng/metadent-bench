@@ -1,7 +1,7 @@
 <h1 align="center">MetaDent: Labeling Clinical Images for Vision-Language Models in Dentistry</h1>
 
 <p align="center">
-  <a href="">
+  <a href="https://journals.sagepub.com/doi/10.1177/00220345261424242">
     <img src="https://img.shields.io/badge/Paper-JDR_2026-b31b1b" alt="Paper">
   </a>
   <a href="https://menxli.github.io/metadent/">
